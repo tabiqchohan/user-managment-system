@@ -1,6 +1,7 @@
 // components/AuthService.js
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+// Base URL: Hugging Face backend API
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://tabiqchohan-user-managment-system.hf.space/api';
 
 // Auth API methods
 export const authApi = {
