@@ -1,44 +1,19 @@
 // components/ApiService.js
-import axios from 'axios';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-
-const api = axios.create({
-  baseURL: API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
-// Request interceptor to add any necessary headers
-api.interceptors.request.use(
-  (config) => {
-    // Add any auth tokens here if needed
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
-
-// Response interceptor to handle responses globally
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    // Handle global error responses
-    console.error('API Error:', error.response || error.message);
-    return Promise.reject(error);
-  }
-);
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
 // User API methods
 export const userApi = {
   // Get all users
   getAllUsers: async () => {
     try {
-      const response = await api.get('/users');
-      return response.data;
+      const response = await fetch(`${API_BASE_URL}/api/users`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return await response.json();
     } catch (error) {
+      console.error('Error fetching users:', error);
       throw error;
     }
   },
@@ -46,9 +21,13 @@ export const userApi = {
   // Get user by ID
   getUserById: async (id) => {
     try {
-      const response = await api.get(`/users/${id}`);
-      return response.data;
+      const response = await fetch(`${API_BASE_URL}/api/users/${id}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return await response.json();
     } catch (error) {
+      console.error('Error fetching user:', error);
       throw error;
     }
   },
@@ -56,9 +35,19 @@ export const userApi = {
   // Create user
   createUser: async (userData) => {
     try {
-      const response = await api.post('/users', userData);
-      return response.data;
+      const response = await fetch(`${API_BASE_URL}/api/users`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userData),
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return await response.json();
     } catch (error) {
+      console.error('Error creating user:', error);
       throw error;
     }
   },
@@ -66,9 +55,19 @@ export const userApi = {
   // Update user (full update)
   updateUser: async (id, userData) => {
     try {
-      const response = await api.put(`/users/${id}`, userData);
-      return response.data;
+      const response = await fetch(`${API_BASE_URL}/api/users/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userData),
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return await response.json();
     } catch (error) {
+      console.error('Error updating user:', error);
       throw error;
     }
   },
@@ -76,9 +75,19 @@ export const userApi = {
   // Partially update user
   partialUpdateUser: async (id, userData) => {
     try {
-      const response = await api.patch(`/users/${id}`, userData);
-      return response.data;
+      const response = await fetch(`${API_BASE_URL}/api/users/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userData),
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return await response.json();
     } catch (error) {
+      console.error('Error partially updating user:', error);
       throw error;
     }
   },
@@ -86,12 +95,18 @@ export const userApi = {
   // Delete user
   deleteUser: async (id) => {
     try {
-      await api.delete(`/users/${id}`);
-      return true;
+      const response = await fetch(`${API_BASE_URL}/api/users/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.ok;
     } catch (error) {
+      console.error('Error deleting user:', error);
       throw error;
     }
   },
 };
-
-export default api;
