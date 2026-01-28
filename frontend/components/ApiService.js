@@ -1,4 +1,5 @@
 // components/ApiService.js
+import { authService } from './AuthService';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
@@ -7,7 +8,9 @@ export const userApi = {
   // Get all users
   getAllUsers: async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/users`);
+      const response = await fetch(`${API_BASE_URL}/api/users`, {
+        headers: authService.getAuthHeaders(),
+      });
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -21,7 +24,9 @@ export const userApi = {
   // Get user by ID
   getUserById: async (id) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/users/${id}`);
+      const response = await fetch(`${API_BASE_URL}/api/users/${id}`, {
+        headers: authService.getAuthHeaders(),
+      });
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -37,9 +42,7 @@ export const userApi = {
     try {
       const response = await fetch(`${API_BASE_URL}/api/users`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: authService.getAuthHeaders(),
         body: JSON.stringify(userData),
       });
       if (!response.ok) {
@@ -57,9 +60,7 @@ export const userApi = {
     try {
       const response = await fetch(`${API_BASE_URL}/api/users/${id}`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: authService.getAuthHeaders(),
         body: JSON.stringify(userData),
       });
       if (!response.ok) {
@@ -77,9 +78,7 @@ export const userApi = {
     try {
       const response = await fetch(`${API_BASE_URL}/api/users/${id}`, {
         method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: authService.getAuthHeaders(),
         body: JSON.stringify(userData),
       });
       if (!response.ok) {
@@ -97,9 +96,7 @@ export const userApi = {
     try {
       const response = await fetch(`${API_BASE_URL}/api/users/${id}`, {
         method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: authService.getAuthHeaders(),
       });
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
