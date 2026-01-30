@@ -5,64 +5,79 @@ const API_BASE_URL =
   "https://tabiqchohan-user-managment-system.hf.space/api";
 
 export const authApi = {
+  // Signup using /users endpoint
   signup: async (userData) => {
-    const res = await fetch(`${API_BASE_URL}/auth/signup`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(userData),
-    });
+    try {
+      // Step 1: Check if user already exists
+      const usersRes = await fetch(`${API_BASE_URL}/users`);
+      if (!usersRes.ok) throw new Error("Failed to fetch users");
 
-    if (!res.ok) {
-      const err = await res.json();
-      throw new Error(err.error || "Signup failed");
+      const users = await usersRes.json();
+      const existingUser = users.find((u) => u.email === userData.email);
+
+      if (existingUser) throw new Error("Email already exists");
+
+      // Step 2: Create new user
+      const createRes = await fetch(`${API_BASE_URL}/users`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(userData),
+      });
+
+      if (!createRes.ok) throw new Error("Signup failed");
+
+      const newUser = await createRes.json();
+
+      // Step 3: Return mock token with user info
+      return {
+        ...newUser,
+        token: `mock_token_for_${userData.email}_${Date.now()}`,
+      };
+    } catch (error) {
+      console.error("Signup error:", error);
+      throw error;
     }
-
-    return res.json(); // { token, user }
   },
 
+  // Login using /users endpoint
   login: async (credentials) => {
-    const res = await fetch(`${API_BASE_URL}/auth/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(credentials),
-    });
+    try {
+      const usersRes = await fetch(`${API_BASE_URL}/users`);
+      if (!usersRes.ok) throw new Error("Failed to fetch users");
 
-    if (!res.ok) {
-      const err = await res.json();
-      throw new Error(err.error || "Login failed");
+      const users = await usersRes.json();
+      const user = users.find((u) => u.email === credentials.email);
+
+      if (!user) throw new Error("Invalid email or password");
+
+      // Return user info with mock token
+      return {
+        ...user,
+        token: `mock_token_for_${credentials.email}_${Date.now()}`,
+      };
+    } catch (error) {
+      console.error("Login error:", error);
+      throw error;
     }
-
-    return res.json(); // { token, user }
   },
 };
 
+// Auth helper functions
 export const authService = {
   setToken: (token) => {
-    if (typeof window !== "undefined") {
-      localStorage.setItem("token", token);
-    }
+    if (typeof window !== "undefined") localStorage.setItem("token", token);
   },
 
   getToken: () => {
-    if (typeof window !== "undefined") {
-      return localStorage.getItem("token");
-    }
+    if (typeof window !== "undefined") return localStorage.getItem("token");
     return null;
   },
 
   removeToken: () => {
-    if (typeof window !== "undefined") {
-      localStorage.removeItem("token");
-    }
+    if (typeof window !== "undefined") localStorage.removeItem("token");
   },
 
-  isAuthenticated: () => {
-    return !!authService.getToken();
-  },
+  isAuthenticated: () => !!authService.getToken(),
 
   getAuthHeaders: () => {
     const token = authService.getToken();
