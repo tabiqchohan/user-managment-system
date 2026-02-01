@@ -57,4 +57,11 @@ export const authService = {
       localStorage.removeItem("token");
     }
   },
+
+  // ✅ ADD THIS (VERY IMPORTANT)
+  isAuthenticated: () => {
+    if (typeof window === "undefined") return false;
+    return !!localStorage.getItem("token");
+  },
 };
+
