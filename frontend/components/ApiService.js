@@ -1,146 +1,106 @@
 // components/ApiService.js
-import { authService } from './AuthService';
+import { authService } from "./AuthService";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://tabiqchohan-user-managment-system.hf.space/api';
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL ||
+  "https://tabiqchohan-user-managment-system.hf.space";
 
-// User API methods
+// ================= USER API =================
 export const userApi = {
-  // Get all users
-  getAllUsers: async () => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/users`, {
-        headers: authService.getAuthHeaders(),
-      });
-      if (!response.ok) {
-        if (response.status === 401 || response.status === 403) {
-          // If unauthorized, remove token
-          authService.removeToken();
-          // Throw specific error for unauthorized access
-          throw new Error('Unauthorized access. Please log in again.');
-        }
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      return await response.json();
-    } catch (error) {
-      console.error('Error fetching users:', error);
-      throw error;
+  // 🔹 Get all users
+  async getAllUsers() {
+    const res = await fetch(`${API_BASE_URL}/api/users`, {
+      method: "GET",
+      headers: authService.getAuthHeaders(),
+    });
+
+    if (!res.ok) {
+      handleAuthError(res);
     }
+
+    return res.json();
   },
 
-  // Get user by ID
-  getUserById: async (id) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/users/${id}`, {
-        headers: authService.getAuthHeaders(),
-      });
-      if (!response.ok) {
-        if (response.status === 401 || response.status === 403) {
-          // If unauthorized, remove token
-          authService.removeToken();
-          // Throw specific error for unauthorized access
-          throw new Error('Unauthorized access. Please log in again.');
-        }
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      return await response.json();
-    } catch (error) {
-      console.error('Error fetching user:', error);
-      throw error;
+  // 🔹 Get user by ID
+  async getUserById(id) {
+    const res = await fetch(`${API_BASE_URL}/api/users/${id}`, {
+      method: "GET",
+      headers: authService.getAuthHeaders(),
+    });
+
+    if (!res.ok) {
+      handleAuthError(res);
     }
+
+    return res.json();
   },
 
-  // Create user
-  createUser: async (userData) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/users`, {
-        method: 'POST',
-        headers: authService.getAuthHeaders(),
-        body: JSON.stringify(userData),
-      });
-      if (!response.ok) {
-        if (response.status === 401 || response.status === 403) {
-          // If unauthorized, remove token
-          authService.removeToken();
-          // Throw specific error for unauthorized access
-          throw new Error('Unauthorized access. Please log in again.');
-        }
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      return await response.json();
-    } catch (error) {
-      console.error('Error creating user:', error);
-      throw error;
+  // 🔹 Create user
+  async createUser(userData) {
+    const res = await fetch(`${API_BASE_URL}/api/users`, {
+      method: "POST",
+      headers: authService.getAuthHeaders(),
+      body: JSON.stringify(userData),
+    });
+
+    if (!res.ok) {
+      handleAuthError(res);
     }
+
+    return res.json();
   },
 
-  // Update user (full update)
-  updateUser: async (id, userData) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/users/${id}`, {
-        method: 'PUT',
-        headers: authService.getAuthHeaders(),
-        body: JSON.stringify(userData),
-      });
-      if (!response.ok) {
-        if (response.status === 401 || response.status === 403) {
-          // If unauthorized, remove token
-          authService.removeToken();
-          // Throw specific error for unauthorized access
-          throw new Error('Unauthorized access. Please log in again.');
-        }
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      return await response.json();
-    } catch (error) {
-      console.error('Error updating user:', error);
-      throw error;
+  // 🔹 Update user (PUT)
+  async updateUser(id, userData) {
+    const res = await fetch(`${API_BASE_URL}/api/users/${id}`, {
+      method: "PUT",
+      headers: authService.getAuthHeaders(),
+      body: JSON.stringify(userData),
+    });
+
+    if (!res.ok) {
+      handleAuthError(res);
     }
+
+    return res.json();
   },
 
-  // Partially update user
-  partialUpdateUser: async (id, userData) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/users/${id}`, {
-        method: 'PATCH',
-        headers: authService.getAuthHeaders(),
-        body: JSON.stringify(userData),
-      });
-      if (!response.ok) {
-        if (response.status === 401 || response.status === 403) {
-          // If unauthorized, remove token
-          authService.removeToken();
-          // Throw specific error for unauthorized access
-          throw new Error('Unauthorized access. Please log in again.');
-        }
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      return await response.json();
-    } catch (error) {
-      console.error('Error partially updating user:', error);
-      throw error;
+  // 🔹 Partial update user (PATCH)
+  async partialUpdateUser(id, userData) {
+    const res = await fetch(`${API_BASE_URL}/api/users/${id}`, {
+      method: "PATCH",
+      headers: authService.getAuthHeaders(),
+      body: JSON.stringify(userData),
+    });
+
+    if (!res.ok) {
+      handleAuthError(res);
     }
+
+    return res.json();
   },
 
-  // Delete user
-  deleteUser: async (id) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/users/${id}`, {
-        method: 'DELETE',
-        headers: authService.getAuthHeaders(),
-      });
-      if (!response.ok) {
-        if (response.status === 401 || response.status === 403) {
-          // If unauthorized, remove token
-          authService.removeToken();
-          // Throw specific error for unauthorized access
-          throw new Error('Unauthorized access. Please log in again.');
-        }
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      return response.ok;
-    } catch (error) {
-      console.error('Error deleting user:', error);
-      throw error;
+  // 🔹 Delete user
+  async deleteUser(id) {
+    const res = await fetch(`${API_BASE_URL}/api/users/${id}`, {
+      method: "DELETE",
+      headers: authService.getAuthHeaders(),
+    });
+
+    if (!res.ok) {
+      handleAuthError(res);
     }
+
+    return true;
   },
 };
+
+// ================= HELPER =================
+function handleAuthError(res) {
+  if (res.status === 401 || res.status === 403) {
+    authService.removeToken();
+    throw new Error("Unauthorized. Please login again.");
+  }
+
+  throw new Error(`Request failed with status ${res.status}`);
+}

@@ -1,9 +1,12 @@
+// components/AuthService.js
+
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL ||
   "https://tabiqchohan-user-managment-system.hf.space";
 
+// ================= AUTH API =================
 export const authApi = {
-  signup: async (userData) => {
+  async signup(userData) {
     const res = await fetch(`${API_BASE_URL}/api/auth/signup`, {
       method: "POST",
       headers: {
@@ -17,10 +20,10 @@ export const authApi = {
       throw new Error(error.error || "Signup failed");
     }
 
-    return await res.json();
+    return res.json();
   },
 
-  login: async (credentials) => {
+  async login(credentials) {
     const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
       method: "POST",
       headers: {
@@ -34,34 +37,44 @@ export const authApi = {
       throw new Error(error.error || "Login failed");
     }
 
-    return await res.json();
+    return res.json();
   },
 };
 
+// ================= AUTH SERVICE =================
 export const authService = {
-  setToken: (token) => {
+  setToken(token) {
     if (typeof window !== "undefined") {
       localStorage.setItem("token", token);
     }
   },
 
-  getToken: () => {
+  getToken() {
     if (typeof window !== "undefined") {
       return localStorage.getItem("token");
     }
     return null;
   },
 
-  removeToken: () => {
+  removeToken() {
     if (typeof window !== "undefined") {
       localStorage.removeItem("token");
     }
   },
 
-  // ✅ ADD THIS (VERY IMPORTANT)
-  isAuthenticated: () => {
+  // ✅ REQUIRED BY ApiService.js
+  getAuthHeaders() {
+    const token = this.getToken();
+
+    return {
+      "Content-Type": "application/json",
+      ...(token && { Authorization: `Bearer ${token}` }),
+    };
+  },
+
+  // ✅ REQUIRED BY layout / route protection
+  isAuthenticated() {
     if (typeof window === "undefined") return false;
     return !!localStorage.getItem("token");
   },
 };
-
